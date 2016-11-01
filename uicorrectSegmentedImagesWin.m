@@ -2,7 +2,7 @@ function uicorrectSegmentedImagesWin
 global If DICimage stats A Position mm AnnotationsDir ff f SegLocation HOURS ffposition
 % close all
 %%%%%%%%%%%%%%%%%%%%%%%%
-Date = '2016_02_09';
+Date = '2015_12_11';
 % Date = '2016_02_09';
 %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -10,14 +10,12 @@ stats=struct();
 DICimage = zeros(2048,2048);
 
 mfile = mfilename('fullpath');
-[a,b] = regexp(mfile,'FrickPaperData');
+[~,b] = regexp(mfile,'FrickPaperData');
 mfiledir = mfile(1:b+1);
 parentdir = mfiledir;
+% parentdir = 'F:\2016_04_18 backup of new comp\pictures\Frick\';
 A = strcat(parentdir,Date,' smFISH\');
-    % A = strcat('D:\Users\zeiss\Pictures\Frick\',Date,' smFISH\');
-    % A = strcat('F:\FrickPaper\',Date,' smFISH\');
-    % A = strcat('\Users\frick\Documents\Goentoro_Lab\DATA\current\',Date,' smFISH\');
-% AnnotationsDir = strcat(A,'ANNOTATIONS\');
+
 AnnotationsDir = strcat(A,'ANNOTATIONS');
 SegLocation = (strcat(A,'autoseg\'));
 cd(SegLocation)
@@ -53,15 +51,11 @@ hFillHoles = uicontrol('Style','pushbutton',...
           'String','FillHoles',...
           'Position',[xspot,450,70,25],...
           'Callback',@FillHolesbutton_Callback);
-% hSegment = uicontrol('Style','pushbutton','String','Re-segment',...
-%           'Position',[xspot,400,70,25],...
-%           'Callback',@segmentbutton_Callback);
 hSaveImage = uicontrol('Style','pushbutton',...
           'String','SaveImage',...
           'Position',[xspot,300,70,25],...
           'Callback',@savebutton_Callback); 
-%    ha = axes(ax,'Units','Pixels','Position',[50,60,200,185]); 
-% align([hAdd,hDelete,hSplit,hSaveImage,hpopup,htext,hFillHoles,hRemoveArea],'Center','None');
+
       
       
       
@@ -383,7 +377,7 @@ setSceneAndUpdate
 end
 
 function updateImage
-global If DICimage savename stats Position mm AnnotationsDir pvalue ff f ffposition
+global If DICimage savename stats Position mm AnnotationsDir pvalue ff f ffposition A
 CC = bwconncomp(If);
 L = labelmatrix(CC);
 stats = regionprops(L,'PixelIdxList');
@@ -480,10 +474,13 @@ imgff = gca;
 imgff.YDir = 'reverse';
 figure(f)
 
+cd(A)
+cd ..
+
 end
 
 
-function savebutton_Callback(source,eventdata)
+function savebutton_Callback(~,~)
 global A If savename
 savethatimage(savename,If,A)
 end
@@ -511,7 +508,8 @@ disp(strcat('image ... ',savename,'...saved'));
 % save(strcat(savename(1:end-4),'.mat'),'segLogical');
 % disp(strcat('image ... ',savename,'...saved'));  
 % end
-
+cd(A)
+cd ..
 end
 
 

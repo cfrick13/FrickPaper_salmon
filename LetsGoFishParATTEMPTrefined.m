@@ -1,71 +1,86 @@
 function LetsGoFishParATTEMPTrefined(Date,director)
+%Date must be cell with string inside , eg. {'2016_02_09'}
+%director is usually FISHareaNewTHRESH
+%files are ultimately saved in a folder titled "FISHareaNewTHRESH5'
 
-A = 'D:\Users\zeiss\Pictures\Frick\';
-% A = Ab;
-% for BB = Ba
+%determine parent directory of the working computer
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+A = parentdir;
+
 % for BB = {'2015_01_15 smFISH'};
 % for BB = {'2015_01_31 smFISH','2015_03_06 smFISH'};
 % for BB = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_30 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH',}
 % for BB = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_05_14 smFISH','2015_07_02 smFISH','2015_07_10 smFISH','2015_08_31 smFISH','2015_09_03 smFISH'};
-for BB = Date;
-    
-    B = BB{1};
-    B = strcat(B,' smFISH');
-    D = '\FLATFIELD';
-    F = director;
-    
-    k647 = 5;
-    k594 = 5;
+        for BB = Date;
 
-    for ksize = 5;
+            B = BB{1};
+            B = strcat(B,' smFISH');
+            D = '\FLATFIELD';
+            F = director; %director is usually FISHareaNewTHRESH
 
+            k647 = 5; %kernel size should be 5
+            k594 = 5; %kernel size should be 5
 
-        %set directories
-        EXP = strcat(A,B,D); 
-        SAV = strcat(A,B,F,num2str(ksize(1)));
-        mkdir(SAV)
-        cd (EXP)
+                for ksize = 5;
+                    %set directories
+                    EXP = strcat(A,B,D); 
+                    SAV = strcat(A,B,F,num2str(ksize(1)));
+                    mkdir(SAV)
+                    cd (EXP)
 
-        %determine values present
-        filelist = dir(strcat('*','*.tif'));
-        
-        
-        speciestokens = '(594_snail|594_smad7|594_pai1|647_smad7|594_pmepa1|594_pai1|594_tieg|594_bhlhe40|647_wnt9a|647_ctgf|594_wnt9a|594_ctgf|647_smad7|647_tieg|647_bhlhe40|647_snail)';
-        CHANSS = findNumberOfVarsInList(filelist,'(Fluor 594|Fluor 647)');
-        CHANS = cellfun(@(x) x(end-2:end),CHANSS,'UniformOutput',0);
+                    %determine values present
+                    filelist = dir(strcat('*','*.tif'));
+                    speciestokens = '(594_snail|594_smad7|594_pai1|647_smad7|594_pmepa1|594_pai1|594_tieg|594_bhlhe40|647_wnt9a|647_ctgf|594_wnt9a|594_ctgf|647_smad7|647_tieg|647_bhlhe40|647_snail)';
+                    CHANSS = findNumberOfVarsInList(filelist,'(Fluor 594|Fluor 647)');
+                    CHANS = cellfun(@(x) x(end-2:end),CHANSS,'UniformOutput',0);
 
-        %determine number of positions to analyze
-        cd (EXP)
-        expfilelist = dir(strcat('*DIC*z10*.tif'));
-        PVALUES = sort(findNumberOfVarsInListP(expfilelist,'p[0-9]+'));
+                    %determine number of positions to analyze
+                    cd (EXP)
+                    expfilelist = dir(strcat('*DIC*z10*.tif'));
+                    PVALUES = sort(findNumberOfVarsInListP(expfilelist,'p[0-9]+'));
 
+                    disp(strcat('process',B))
+                    %compute the LoG convolved and thresholded images
+                        for chans = CHANS
+                            chan = char(chans);
 
+                                if strcmp(chan,'647')
+                                    ksize = k647;
+                                else
+                                    ksize = k594;
+                                end
 
-        disp(strcat('process',B))
-        %compute the LoG convolved and thresholded images
-            for chans = CHANS
-                chan = char(chans);
-
-                    if strcmp(chan,'647')
-                    ksize = k647;
-                    else
-                    ksize = k594;
-                    end
-
-%                 for cfile = 1:length(PVALUES)
-                parfor cfile = 1:length(PVALUES)
-                pvalue = char(PVALUES{cfile});
-                cd(EXP)
-                [details,fishdotstack] = makeimagestack(EXP,pvalue,chan,ksize);
-            [onlysegmented,thresh] = findthresh(fishdotstack,details,SAV);
-                CCmrna = bwconncomp(onlysegmented,6);%%%????? is 6 or 18 or 26 better?
-                savemrna(CCmrna,details,thresh,SAV)
+                                parfor cfile = 1:length(PVALUES)
+                                    pvalue = char(PVALUES{cfile});
+                                    cd(EXP)
+                                    [details,fishdotstack] = makeimagestack(EXP,pvalue,chan,ksize);
+                                    [onlysegmented,thresh] = findthresh(fishdotstack,details,SAV);
+                                    CCmrna = bwconncomp(onlysegmented,6);%%%????? is 6 or 18 or 26 better?
+                                    savemrna(CCmrna,details,thresh,SAV)
+                                end
+                        end
                 end
-            end
-    end
-end
+        end
 end
 
+
+%saving functions
+function savemstack(mstack,details,SAVdir)
+cd(SAVdir)
+save(strcat('mstack_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'mstack');
+cd ..
+end
+function savemrna(CCmrna,details,thresh,SAVdir)
+cd(SAVdir)
+
+save(strcat('details_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'details');
+save(strcat('CCmrna_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'CCmrna');
+save(strcat('thresh_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'thresh');
+cd ..
+end
 
 
 function [dottedz,thresh] = findthresh(fishdotstack,details,SAV)
@@ -165,8 +180,6 @@ dottedz = false(size(fishdotstack));
 savemstack(dottedz,details,SAV)
 end
 
-
-
 function [details,fishdotstack] = makeimagestack(EXP,pvalue,chan,ksize)
 cd (EXP)
 imagefilelist = dir(strcat('*',pvalue,'-*',chan,'*.tif'));
@@ -221,29 +234,12 @@ stphre=1;
 
 end
 
-
 function  LoGstack = LaplacianOfGaussianStack(imgstack,dims,ksize)
         LoGstack = zeros(dims(1),dims(2),dims(3));
         for i = 1:size(imgstack,3)
         LoGstack(:,:,i) = logMasked(imgstack(:,:,i),ksize);
         end
         
-end
-
-
-function savemstack(mstack,details,SAVdir)
-cd(SAVdir)
-save(strcat('mstack_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'mstack');
-cd ..
-end
-
-function savemrna(CCmrna,details,thresh,SAVdir)
-cd(SAVdir)
-
-save(strcat('details_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'details');
-save(strcat('CCmrna_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'CCmrna');
-save(strcat('thresh_',details.species,'_',details.dose,'_',details.tpoint,'_',details.channelnumber,'_',details.pvalue),'thresh');
-cd ..
 end
 
 function kernel = chooseKernel(ksize)

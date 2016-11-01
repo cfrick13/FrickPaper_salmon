@@ -1,4 +1,5 @@
 function mstackTOdottedWin(Date,director)
+%saves a logical matrix of mRNA locations for all scenes in experiment
 global   A   zs AnnotationsDir  
 
 ksize =5;
@@ -18,9 +19,13 @@ for BB = Date;
 
 %%%%%%%%%%%%%%%%%%%%%%%%
     % close all
-    A = strcat('D:\Users\zeiss\Pictures\Frick\',Datez,' smFISH');
-    % A = strcat('\Users\frick\Documents\Goentoro_Lab\DATA\current\',Date,' smFISH\');
-    % AnnotationsDir = strcat(A,'ANNOTATIONS\');
+    
+    mfile = mfilename('fullpath');
+    [~,b] = regexp(mfile,'FrickPaperData');
+    mfiledir = mfile(1:b+1);
+    parentdir = mfiledir;
+    A = strcat(parentdir,Datez,' smFISH\');
+        
     AnnotationsDir = strcat(A,'\ANNOTATIONS');
     SegLocation = (strcat(A,'\autoseg\'));
     ImgLocation = strcat(A,'\FLATFIELD\');

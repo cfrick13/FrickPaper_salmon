@@ -2,20 +2,25 @@ function AllCellTimeTracesMakerMacWin
 ExperimentStructure = struct();
 
 % for Dates = {'2014_09_30','2014_10_01','2014_10_04','2014_10_24','2014_11_25','2015_01_15','2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01','2015_08_31','2015_09_03'};  
-for Dates = {'2014_09_30','2014_10_01','2014_10_04','2014_10_24','2014_11_25','2015_01_15','2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01','2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'};    
-% for Dates = {'2015_01_15','2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01','2016_01_25'};
-% for Dates = {'2015_08_31','2015_09_03'};
-% for Dates = {'2014_09_30','2014_10_01','2014_10_04'}
-    % for Dates = {'2015_07_02','2015_07_10','2015_07_14'}
-    % for Dates = {'2015_07_02'};    
-% for Dates = {'2015_08_31','2015_09_03'};  
-% for Dates = {'2015_12_15','2015_12_19','2016_01_25'}
+% for Dates = {'2014_09_30','2014_10_01','2014_10_04','2014_10_24','2014_11_25','2015_01_15','2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01','2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'};    
+for  Dates = {'2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_04_01','2016_01_25'};%snail
+    % Date = {'2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01'};%snail
 % for Dates = {'2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'}
-% for Dates = {'2016_02_19'}
-% for Dates = {'2016_02_09'}
+
 Date = char(Dates);
-ADir = 'D:\Users\zeiss\Pictures\Frick\ImagingResults';
-BDir = 'D:\Users\zeiss\Documents\';
+
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+ADir = strcat(parentdir,'ImagingResults');
+
+
+
+% ADir = 'D:\Users\zeiss\Pictures\Frick\ImagingResults';
+BDir = parentdir;
+
+subDIR = strcat(BDir,'DATA');
 cd(ADir)
 cd(ADir)
 DetailsFilename = 'ExperimentalDetails.xlsx';
@@ -49,7 +54,7 @@ end
 
     
     
-    cd(strcat(BDir,'MATLAB\AllImagingDataCompiled\Newz'))
+    cd(subDIR)
     Dose = char(deta.dose);
     Frame = deta.frame;
     frame = num2str(Frame);
@@ -66,7 +71,8 @@ end
         stophere=1;
     end
     DATA = vertcat(deta.timeVector,deta.cellTraces);
-    savename = strcat('data_',Date,'_smad3g_dose',Dose,'_frame',Frame,'_',pvalue)
+    savename = strcat('data_',Date,'_smad3g_dose',Dose,'_frame',Frame,'_',pvalue);
+    disp(savename)
     Neato.(savename) = DATA;
     save(strcat(savename,'.mat'),'-struct','Neato',savename);
 %     save(strcat(char(emmiesname),'.mat'), '-struct','M',emmiesname);
@@ -80,7 +86,7 @@ ExperimentStructure.(strcat('i',Date,'i')) = DateStruct;
 
 end
 
-cd(strcat(BDir,'MATLAB\AllImagingDataCompiled'))
+cd(subDIR)
 
 save('ExperimentStructure.mat','ExperimentStructure');
 % save('ExperimentStructureNoTimeAdjustMat.mat','ExperimentStructure');

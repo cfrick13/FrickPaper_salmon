@@ -1,7 +1,13 @@
 function smfishrenameexports(DateB)
 for B = DateB
     Date = B{1};
-A = strcat('D:\Users\zeiss\Pictures\Frick\',Date,' smFISH\');
+    
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+A = parentdir;
+
 cd(A)
 [~,~,raw] = xlsread('smFISHdetailz.xlsx');
 

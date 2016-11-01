@@ -1,6 +1,10 @@
 function LetsGoFishPlot(Date,director)
 
-A = 'D:\Users\zeiss\Pictures\Frick\';
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+A = parentdir;
 % for BB = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH'};
 %     for BB = {'2015_01_29 smFISH','2015_01_30 smFISH','2015_01_31 smFISH','2015_03_06 smFISH'};
 % for BB = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_05_14 smFISH'}

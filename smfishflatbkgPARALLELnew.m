@@ -2,7 +2,12 @@
 % divide
 function smfishflatbkgPARALLELnew(Date)
 %specify directory
-A = 'D:\Users\zeiss\Pictures\Frick\';
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+A = parentdir;
+
 for BB = Date
 B = BB{1};
 B = strcat(B,' smFISH');

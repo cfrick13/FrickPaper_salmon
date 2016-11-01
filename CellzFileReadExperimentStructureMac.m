@@ -3,13 +3,25 @@ basallength=6;
 fs=7;
 tshift=0;
 smoothing = 12;
-DATAdir = 'D:\Users\zeiss\Documents\MATLAB\AllImagingDataCompiled';
-ADir = 'D:\Users\zeiss\Documents\';
-% DATAdir = '\Users\frick\Documents\MATLAB\AllImagingDataCompiled';
 
-cd (DATAdir); mkdir('saveSCALARS')
-% dataName = 'AllCellTimeTracesNewest.mat';
-% % dataNameTwo = 'ExperimentStructureNoTimeAdjustMat.mat';
+
+
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+
+BDir = parentdir;
+MRNAdir = strcat(BDir,'mrnacounted');
+DATAdir = strcat(BDir,'DATA');
+SAVdir = strcat(BDir,'DATA');
+CONCdir = strcat(BDir,'mrnaconc');
+
+
+cd (MRNAdir);
+if isempty(dir('*saveSCALARS*'))
+mkdir('saveSCALARS')
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,33 +34,18 @@ stringsarray = {'overdriver','no cfp','nocfp','dimmer',...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%
-% dataNameTwo = 'ExperimentStructure.mat';
-dataNameTwo = 'ExperimentStructure_New.mat';
-% EmmiesDataFile = '2015_12_15_emmies.mat';
-% EmmiesDataFile = 'm1519newcur.mat'; %only curated dec19 date
-% EmmiesDataFile ='m1519jan12cur.mat'; %curated dec15 and dec19 date
-% EmmiesDataFile ='m1519full.mat'; %curated dec15 and dec19 date
-% EmmiesDataFile ='m1519fullnocfp.mat'; %curated dec15 and dec19 date
-% EmmiesDataFile ='m2016-25p2.mat'; %part-curated jan25
-% EmmiesDataFile ='m2016-02-17.mat'; %part-curated feb09
-% EmmiesDataFile ='m2016-02-17-b.mat'; %better-curated feb09
-% EmmiesDataFile = 'm2016-02-19.mat'; %pre-curated feb19
-% EmmiesDataFile = 'onlym2016-02-19.mat'; %pre-curated feb19only
-% EmmiesDataFile = 'm2016-02-19only09.mat'; %better curated feb09 only
-% EmmiesDataFile = 'm2016-02-19b.mat'; %better curated feb09 only
-% 
-% EmmiesDataFile = 'mlatestcuratedFOCUS.mat'; %better curated all dates only and in focus
-% EmmiesDataFile = 'mALLFOCUS.mat'; %better curated all dates only and in focusmALL.mat
-% EmmiesDataFile = 'mALLFOCUSsansAPRIL1.mat'; %better curated all dates only and in focusmALL.mat
-% EmmiesDataFile = 'mrna_all.mat';
-EmmiesDataFile = 'mrna_all_snail_snail.mat';
-EmmiesDataFile = 'mrna_2016_02_19.mat';
+dataNameTwo = 'ExperimentStructure.mat';
+% dataNameTwo = 'ExperimentStructure_New.mat';
+
+EmmiesDataFile = 'mrna_snail_focus.mat';
+ConcDataFile = 'mconc_snail_focus.mat';
+% EmmiesDataFile = 'mrna_2016_02_19.mat';
 mal = load(EmmiesDataFile);
 fnamesmal = fieldnames(mal);
 % [a,b,c,d] = regexp(fnamesmal,'(594_snail|594_smad7|594_pai1|647_snail|647_wnt9a|647_ctgf|594_wnt9a|594_ctgf|647_smad7|647_pai1|594_bhlhe40)');
-[a,b,c,d] = regexp(fnamesmal,'(647_wnt9a|647_ctgf|594_wnt9a|594_ctgf)');
-[a,b,c,d] = regexp(fnamesmal,'(594_snail|647_snail)');
-[a,b,c,d] = regexp(fnamesmal,'594_snail');
+% [a,b,c,d] = regexp(fnamesmal,'(647_wnt9a|647_ctgf|594_wnt9a|594_ctgf)');
+[~,~,~,d] = regexp(fnamesmal,'(594_snail|647_snail)');
+% [~,~,~,d] = regexp(fnamesmal,'594_snail');
 dindex = cellfun(@isempty,d,'UniformOutput',1);
 dmat = d(~dindex);
 dmat = cellfun(@(x) x{1},dmat,'UniformOutput',0);
@@ -169,10 +166,25 @@ for SingleStruct = runEmAll';
 
         %%%%%%% LOAD EMMIES %%%%%%%%%%%%%%
         disp(strcat(Date,'-',Position,'-',chosenspecies));
-        cd(strcat(ADir,'MATLAB\AllImagingDataCompiled'))
+        cd(MRNAdir)
         filename = strcat('emmies*',Date,'*',chosenspecies,'*',Position);
 
         AAA = load(EmmiesDataFile);
+                cd(CONCdir)
+        ABA = load(ConcDataFile);
+        
+%                 AREAdir = strcat(parentdir,Date,' smFISH\FISHareaNewTHRESH5');
+%                 cd(AREAdir)
+%             dircc = dir(strcat('CCcells*',chosenspecies,'*',Position,'*.mat'));
+%             ccfname = {dircc.name};
+%             if isempty(ccfname)
+%                 stope=1;
+%             end
+%                     CC = load(ccfname{1});
+%                     CCcells = CC.CCcells;
+%                     CellAREA = CCcells.areaOfCell;
+%                     CCmrna = CCcells.mRNA594inCell;
+                    
         fnames = fieldnames(AAA);
         [~,~,~,d] = regexp(fnames,Date);
         dateidx = cellfun(@isempty,d,'UniformOutput',1);
@@ -186,9 +198,11 @@ for SingleStruct = runEmAll';
         if sum(idx)>0
             EmFileChar = char(fnames{idx});
         emmies = getfield(AAA,fnames{idx});
+        conc = getfield(ABA,fnames{idx});
         else
             EmFileChar = filename;
         emmies = nan(size(SCALARS{length(SCALARS)}'));
+        conc =  nan(size(SCALARS{length(SCALARS)}'));
         end
 %         AAA = load(EmmiesDataFile, filename);
 %             EmFileName = fieldnames(AAA);
@@ -200,6 +214,11 @@ for SingleStruct = runEmAll';
 %         emmies = getfield(AAA,char(EmFileName));
 %         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         cellarea = CellAREA;
+%         cellarea(isnan(emmies)) = NaN;
+
+        cellareaz = emmies./conc;
+
 
 
 
@@ -445,14 +464,14 @@ end
 stophere=1;
 
 % cd('\Users\frick\Documents\MATLAB\AllImagingDataCompiled')
-cd(strcat(ADir,'MATLAB\AllImagingDataCompiled'));
+cd(SAVdir);
 save('ScalarStructure.mat','ScalarStruct','NAMO','COLORS');
 save(strcat('GeneScalarStructure',chosenspecies,EmmiesDataFile(1:end-4),'.mat'),'GeneScalarStruct','NAMO','COLORS');
 save('ScalarStructureOnly.mat','ScalarStructOnly','NAMO','COLORS');
 save('tracesstructabs.mat','tracesstruct');
 save('tracesstructfc.mat','Ttracesstruct');
 save('mrnastruct.mat','Mmrnastruct');
-cd(strcat(ADir,'MATLAB'))
+cd(BDir)
 end
 end
 

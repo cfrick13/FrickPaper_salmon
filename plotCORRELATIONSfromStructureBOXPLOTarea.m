@@ -1,4 +1,4 @@
-function plotCORRELATIONSfromStructureBOXPLOTcompare
+function plotCORRELATIONSfromStructureBOXPLOTarea
 close all
 CORR = struct();R = struct();P = struct();Rf=struct();Rn=struct();
 % drawnow
@@ -45,7 +45,9 @@ SAVdir = strcat(BDir,'DATA');
 % CountType = 'mlatestcurated'; %feb19-2016 more curation'mlatestcurated.mat'
 
 GeneChoiceArray = {'647_snail';'594_snail'};
-CountType = 'mrna_snail';
+% GeneChoiceArray = {'647_snail'};
+% GeneChoiceArray = {'594_snail'};
+CountType = 'mrna_snail_focus';
 
 % GeneChoiceArray = {'647_ctgf';'594_ctgf'};
 % GeneChoiceArray = {'647_wnt9a';'594_wnt9a'};

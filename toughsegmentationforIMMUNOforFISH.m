@@ -1,24 +1,22 @@
 function  toughsegmentationforIMMUNOforFISH(Date)
 
 % for DATES = {'2015_01_30 C2C12 immuno timecourse old antibody'}
-for DATES = Date
+    for DATES = Date
+        mfile = mfilename('fullpath');
+        [~,b] = regexp(mfile,'FrickPaperData');
+        mfiledir = mfile(1:b+1);
+        parentdir = mfiledir;
+        Ab = parentdir;
 
-% {'2015_03_06 smFISH'}
-Ab = 'D:\Users\zeiss\Pictures\Frick\';
-% Ab = 'F:\';
-% for DATES = Ba
+        B = char(DATES);
+        B = strcat(B,' smFISH');
 
-% for DATES = {'2015_03_06 smFISH'}
-
-B = char(DATES);
-B = strcat(B,' smFISH');
-
-A = strcat(Ab,B,'\');
-B = 'FLATFIELD\';
-C = 'Thresholds7';
-mkdir(strcat(A,'autoseg\'));
-choosefiles(A,B,C)
-end
+        A = strcat(Ab,B,'\');
+        B = 'FLATFIELD\';
+        C = 'Thresholds7';
+        mkdir(strcat(A,'autoseg\'));
+        choosefiles(A,B,C)
+    end
 end
 
 function choosefiles(A,B,Cdir)

@@ -20,11 +20,13 @@ CHIGH = 1200;
 DotsOn =1;
 stats=struct();
 DICimage = zeros(2048,2048);
-% close all
-% A = strcat('D:\Users\zeiss\Pictures\Frick\',Date,' smFISH');
-A = strcat('F:\FrickPaper\',Date,' smFISH');
-% A = strcat('\Users\frick\Documents\Goentoro_Lab\DATA\current\',Date,' smFISH\');
-% AnnotationsDir = strcat(A,'ANNOTATIONS\');
+    
+    mfile = mfilename('fullpath');
+    [~,b] = regexp(mfile,'FrickPaperData');
+    mfiledir = mfile(1:b+1);
+    parentdir = mfiledir;
+    A = strcat(parentdir,Date,' smFISH\');
+    
 AnnotationsDir = strcat(A,'\ANNOTATIONS');
 SegLocation = (strcat(A,'\autoseg\'));
 ImgLocation = strcat(A,'\FLATFIELD\');

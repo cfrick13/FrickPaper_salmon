@@ -1,13 +1,13 @@
 
 function writeEmmiesNew(director)
 % for DD = {'2015_07_10 smFISH'};
-CountsString = 'mrna_all.mat';
-ConcString = 'mconc.mat';
+CountsString = 'mrna_snail.mat';
+ConcString = 'mconc_snail.mat';
 % for DD = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_08_31 smFISH','2015_09_03 smFISH','2015_12_15 smFISH','2015_12_19 smFISH','2016_01_25 smFISH'};% for DD = {'2015_12_15 smFISH','2015_12_19 smFISH'}
 % for DD = {'2016_01_25 smFISH'}
     % for DD = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_05_14 smFISH'};
-for DD = {'2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'}
-% for DD = {'2015_01_15 smFISH','2015_01_19 smFISH','2015_01_29 smFISH','2015_01_30 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH'}
+% for DD = {'2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_06 smFISH','2015_03_25 smFISH','2015_03_31 smFISH','2015_04_01 smFISH','2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'}
+for DD = {'2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_04_01','2016_01_25'};%snail
 % for DD = {'2015_01_15','2015_01_19','2015_01_29','2015_01_31','2015_03_06','2015_03_25','2015_03_31','2015_04_01'};    
 % for DD = {'2015_08_31','2015_09_03','2015_12_15','2015_12_19','2016_01_25','2016_02_09','2016_02_19'}
 % for DD = {'2016_02_09 smFISH','2016_02_19'};
@@ -16,8 +16,13 @@ for DD = {'2015_01_19 smFISH','2015_01_29 smFISH','2015_01_31 smFISH','2015_03_0
 Date = Dates(1:10);
 
 
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+A = strcat(parentdir,Date,' smFISH\');
 
-A = strcat('D:\Users\zeiss\Pictures\Frick\',Date,' smFISH\');
+% A = strcat('D:\Users\zeiss\Pictures\Frick\',Date,' smFISH\');
 % CCcellDir = strcat(A,'FISHareaNew7');
 % F = 'FISHareaNewMEAN7';
 % F = 'FISHareaNewMEAN5';
@@ -25,11 +30,12 @@ F = director;
 ksize=5;
 CCcellDir = strcat(A,F,num2str(ksize(1)));
 DICDir = strcat(A,'autoseg\');
-COUNTSdir = strcat('D:\Users\zeiss\Documents\MATLAB\AllImagingDataCompiled');
+COUNTSdir = strcat(parentdir,'mrnacounted');
 % COUNTSdir = strcat('D:\Users\zeiss\Documents\MATLAB\CountsAndConcManThreshNew');
 % CONCdir = strcat('D:\Users\zeiss\Documents\MATLAB\CountsAndConc');
-CONCdir = strcat('D:\Users\zeiss\Documents\MATLAB\AllImagingDataCompiled');
+CONCdir = strcat(parentdir,'mrnaconc');
 mkdir(CONCdir)
+mkdir(COUNTSdir)
 cd(CONCdir)
 
 %load the cellLocation info in the CCpositions file

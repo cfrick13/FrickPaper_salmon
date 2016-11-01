@@ -3,15 +3,22 @@ global fff CellImage correct DICimage AnnotationsJPGDir pvalueold stats A Positi
 close all
 pvalueold ='old';
 correct = 0;
-Date = '2016_02_09';
+Date = '2015_01_29';
 % Date = '2015_01_31';
 
 stats=struct();
 DICimage = zeros(2048,2048);
-basefolder = 'F:\FrickPaper\';
-A = strcat(basefolder,Date,' smFISH\');
-ExcelDir = strcat(basefolder,'\ImagingResults');
-CCcellDir = strcat(A,'FISHareaNew7');
+
+mfile = mfilename('fullpath');
+[~,b] = regexp(mfile,'FrickPaperData');
+mfiledir = mfile(1:b+1);
+parentdir = mfiledir;
+
+A = strcat(parentdir,Date,' smFISH\');
+
+ExcelDir = strcat(parentdir,'\ImagingResults');
+% CCcellDir = strcat(A,'FISHareaNew7');
+CCcellDir = strcat(A,'FISHareaNewTHRESH5');
 DICDir = strcat(A,'autoseg\');
 AnnotationsDir = strcat(A,'ANNOTATIONS\');
 AnnotationsJPGDir = strcat(A,'ANNOTATIONSJPG\');
@@ -475,9 +482,9 @@ cd ..
         ann = loadUpFinalImageOfStack(char(annfilenames{1}));
         else
             cd('ANNOTATIONS')
-        scene = 's00';
+        scene = 's*00';
         scene(end-1:end) = pvalue(end-1:end);
-        filelist = dir(strcat('*',scene,'*.jpg'));
+        filelist = dir(strcat('*',scene,'*'));
         annfilenames = {filelist.name};
         ann = imread(char(annfilenames));
         cd .. 
